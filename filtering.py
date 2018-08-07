@@ -141,7 +141,7 @@ def bigram_probability(message):
                 spam_probability_denominator += spam_frequency[first_unigram, second_unigram]
         probability = spam_probability_of_bigram / (spam_probability_denominator + (vocabulary ** 2))
         probability_s *= probability
-        print('\n')
+    print('\n')
     print('Ham Probability: ' +str(probability_h))
     print('Spam Probability: ' +str(probability_s))
     print('\n')
