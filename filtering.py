@@ -9,15 +9,14 @@ from functools import reduce
 
 import nltk
 from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import RegexpTokenizer
 import pandas as pd
 import string
 import re
 
 #Inspecting data
 full_corpus = pd.read_csv('resources/tsv_files/SMSSpamCollection.tsv', sep='\t', header=None, names=['label', 'msg_body'])
-#print("Input data has {} rows and {} columns".format(len(full_corpus), len(full_corpus.columns)))
-#print(full_corpus.info())
+# print("Input data has {} rows and {} columns".format(len(full_corpus), len(full_corpus.columns)))
+# print(full_corpus.info())
 
 # Separating messages into ham and spam
 ham_text = []
@@ -29,7 +28,6 @@ def separate_msgs():
         message_text = column[1]
         if label == 'ham':
             ham_text.append(message_text)
-
         elif label == 'spam':
             spam_text.append(message_text)
 
@@ -61,9 +59,8 @@ def preprocessing_msgs(corpus):
     return categorized_text['lemmatized_msg_words']
 
 # Extracting features i.e. n-grams
-unigrams = []
-bigrams = []
 def feature_extraction(preprocessed_text):
+    bigrams = []
     unigrams_lists = []
     for msg in preprocessed_text:
         # adding end of and start of a message
@@ -110,7 +107,7 @@ def bigram_probability(message):
     # stop words removed unigrams for vocabulary
     ham_unigrams = [word for word in feature_extraction(preprocessing_msgs(ham_text)) if word not in stopwords]
     spam_unigrams = [word for word in feature_extraction(preprocessing_msgs(spam_text)) if word not in stopwords]
-
+    # frequecies of bigrams extracted
     ham_frequency = ham_bigram_feature_frequency()
     spam_frequency  = spam_bigram_feature_frequency()
     print('========================== Calculating Probabilities ==========================')
@@ -121,11 +118,11 @@ def bigram_probability(message):
         # probability of bigram (smoothed)
         ham_probability_of_bigram = ham_frequency[bigram] + 1
         print(bigram, ' occurs ', ham_probability_of_bigram)
-        vocabulary = len(set(ham_unigrams))
         for (first_unigram, second_unigram) in filter_stopwords_bigrams(ham_unigrams):
+            ham_probability_denominator += 1
             if(first_unigram == bigram[0]):
                 ham_probability_denominator += ham_frequency[first_unigram, second_unigram]
-        probability = ham_probability_of_bigram / (ham_probability_denominator + (vocabulary ** 2))
+        probability = ham_probability_of_bigram / ham_probability_denominator
         probability_h *= probability
     print('\n')
     print('----------- Spam Freuquencies ------------')
@@ -135,11 +132,11 @@ def bigram_probability(message):
         # probability of bigram (smoothed)
         spam_probability_of_bigram = spam_frequency[bigram] + 1
         print(bigram, ' occurs ', spam_probability_of_bigram)
-        vocabulary = len(set(spam_unigrams))
         for (first_unigram, second_unigram) in filter_stopwords_bigrams(spam_unigrams):
+            spam_probability_denominator += 1
             if(first_unigram == bigram[0]):
                 spam_probability_denominator += spam_frequency[first_unigram, second_unigram]
-        probability = spam_probability_of_bigram / (spam_probability_denominator + (vocabulary ** 2))
+        probability = spam_probability_of_bigram / spam_probability_denominator
         probability_s *= probability
     print('\n')
     print('Ham Probability: ' +str(probability_h))
