@@ -1,4 +1,4 @@
-# MailTypePrediction
+# mail-type-prediction
 A basic application with necessary steps for filtering spam messages using bigram model with python language. 
 
 N-grams are used for language modeling which is based on word prediction that is it predicts next word of a sentence from previous N-1 words. Bigram is the 2-word sequence of N-grams which predicts the next word of a sentence using the previous one word. Instead of considering the whole history of a sentence or a particular word sequence, a model like bigram can be occupied in terms of approximation of history by occupying a limited history.
